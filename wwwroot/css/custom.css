@@ -1,0 +1,84 @@
+﻿body {
+}
+
+.jumbotron {
+    background-color: #66A2BA;
+    box-shadow: 0 3px 10px black;
+}
+
+img {
+    box-shadow: 0px 0 10px black;
+}
+
+.lead {
+    font-size: 2em;
+}
+
+.blockquote {
+    float: right;
+    width: 40%;
+    margin: 5px;
+}
+
+.quote {
+    color: #66A2BA;
+}
+
+
+.blockquote-text {
+    font-style: italic;
+}
+
+.author {
+    font-weight: bold;
+    text-align: right;
+    font-style: normal;
+}
+
+.author::before {
+    content: "\2014\0020";
+}
+
+img {
+    transition: transform .7s ease-in-out;
+}
+
+img:hover {
+    transform: rotate(360deg);
+    box-shadow: 0 8px 8px -4px black;
+}
+
+p {
+    font-size: 1.2em !important;
+}
+
+address {
+    font-size: 1.2em;
+}
+
+table {
+    background-color: #66A2BA;
+}
+
+a {
+    color: #66A2BA;
+}
+
+    a:hover {
+        color: #117A8B
+    }
+
+.btn-crud {
+    background-color: #66A2BA;
+    color: #EEEEEE;
+    border-radius: 45%;
+    padding: 14px 40px;
+}
+
+    .btn-crud:hover {
+        transition: 0.4s;
+        background-color: #117A8B;
+        color: #EEEEEE;
+        border-radius: 50%;
+        padding: 14px 40px;
+    }
