@@ -22,7 +22,7 @@ namespace Trackity.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-            return View(await context.Expenses.ToListAsync());
+            return View(await context.Expenses.Include(e => e.ExpenseType).ToListAsync());
         }
 
         // GET: Expense/Details/5
@@ -32,8 +32,8 @@ namespace Trackity.Controllers
             {
                 return NotFound();
             }
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
             var expense = await context.Expenses
+                .Include(e => e.ExpenseType)
                 .FirstOrDefaultAsync(m => m.ExpenseId == id);
             if (expense == null)
             {
@@ -46,9 +46,8 @@ namespace Trackity.Controllers
         // GET: Expense/Create
         public IActionResult Create()
         {
-            ViewBag.Action = "Create";
-            //Add? var expense = context.Expenses.Find(Id)
             ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId");
             return View("Create", new Expense());
         }
 
@@ -57,7 +56,7 @@ namespace Trackity.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ExpenseId,Date,Name,Cost")] Expense expense)
+        public async Task<IActionResult> Create([Bind("ExpenseId,Date,Name,Cost,ExpenseTypeId")] Expense expense)
         {
             if (ModelState.IsValid)
             {
@@ -65,14 +64,10 @@ namespace Trackity.Controllers
                 await context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                //added ViewBag
-                ViewBag.Action = (expense.ExpenseId == 0) ? "Create" : "Edit";
-                ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-                return View(expense);
-            }
-            
+            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId");
+            return View(expense);
+
         }
 
         // GET: Expense/Edit/5
@@ -82,13 +77,14 @@ namespace Trackity.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Action = "Edit";
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
+           
             var expense = await context.Expenses.FindAsync(id);
             if (expense == null)
             {
                 return NotFound();
             }
+            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId", expense.ExpenseTypeId);
             return View(expense);
         }
 
@@ -97,7 +93,7 @@ namespace Trackity.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ExpenseId,Date,Name,Cost")] Expense expense)
+        public async Task<IActionResult> Edit(int id, [Bind("ExpenseId,Date,Name,Cost,ExpenseTypeId")] Expense expense)
         {
             if (id != expense.ExpenseId)
             {
@@ -124,6 +120,8 @@ namespace Trackity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId",expense.ExpenseTypeId);
             return View(expense);
         }
 
@@ -134,8 +132,9 @@ namespace Trackity.Controllers
             {
                 return NotFound();
             }
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
+            
             var expense = await context.Expenses
+                .Include(e => e.ExpenseType)
                 .FirstOrDefaultAsync(m => m.ExpenseId == id);
             if (expense == null)
             {
@@ -162,3 +161,5 @@ namespace Trackity.Controllers
         }
     }
 }
+//return View(_context.Albums .Include(a => a.Artist) .OrderBy(a => a.Artist.Name) .Include(a => a.Genre) .ToList());
+//return View(await _context.Expenses .Include(e=>e.Type) .ToListAsync());
