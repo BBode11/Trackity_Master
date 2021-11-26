@@ -11,18 +11,18 @@ namespace Trackity.Controllers
 {
     public class ExpenseController : Controller
     {
-        private ExpenseContext context { get; set; }
+        private readonly ExpenseContext _context;
 
-        public ExpenseController(ExpenseContext ctx)
+        public ExpenseController(ExpenseContext context)
         {
-            context = ctx;
+            _context = context;
         }
 
         // GET: Expense
         public async Task<IActionResult> Index()
         {
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-            return View(await context.Expenses.Include(e => e.ExpenseType).ToListAsync());
+            var expenseContext = _context.Expenses.Include(e => e.ExpenseType);
+            return View(await expenseContext.ToListAsync());
         }
 
         // GET: Expense/Details/5
@@ -32,7 +32,8 @@ namespace Trackity.Controllers
             {
                 return NotFound();
             }
-            var expense = await context.Expenses
+    
+            var expense = await _context.Expenses
                 .Include(e => e.ExpenseType)
                 .FirstOrDefaultAsync(m => m.ExpenseId == id);
             if (expense == null)
@@ -46,9 +47,10 @@ namespace Trackity.Controllers
         // GET: Expense/Create
         public IActionResult Create()
         {
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId");
-            return View("Create", new Expense());
+            //added viewbag statement to pass to view
+            ViewBag.ExpenseTypes = _context.ExpenseTypes.OrderBy(t => t.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(_context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId");
+            return View();
         }
 
         // POST: Expense/Create
@@ -60,14 +62,14 @@ namespace Trackity.Controllers
         {
             if (ModelState.IsValid)
             {
-                context.Add(expense);
-                await context.SaveChangesAsync();
+                _context.Add(expense);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId");
+            //added viewbag statement to pass to view
+            ViewBag.ExpenseTypes = _context.ExpenseTypes.OrderBy(t => t.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(_context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId", expense.ExpenseTypeId);
             return View(expense);
-
         }
 
         // GET: Expense/Edit/5
@@ -77,14 +79,14 @@ namespace Trackity.Controllers
             {
                 return NotFound();
             }
-           
-            var expense = await context.Expenses.FindAsync(id);
+            //added viewbag statement to pass to view
+            ViewBag.ExpenseTypes = _context.ExpenseTypes.OrderBy(t => t.Name).ToList();
+            var expense = await _context.Expenses.FindAsync(id);
             if (expense == null)
             {
                 return NotFound();
             }
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId", expense.ExpenseTypeId);
+            ViewData["ExpenseTypeId"] = new SelectList(_context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId", expense.ExpenseTypeId);
             return View(expense);
         }
 
@@ -104,8 +106,8 @@ namespace Trackity.Controllers
             {
                 try
                 {
-                    context.Update(expense);
-                    await context.SaveChangesAsync();
+                    _context.Update(expense);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -120,8 +122,9 @@ namespace Trackity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.ExpenseTypes = context.ExpenseTypes.OrderBy(e => e.Name).ToList();
-            ViewData["ExpenseTypeId"] = new SelectList(context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId",expense.ExpenseTypeId);
+            //added viewbag statement to pass to view
+            ViewBag.ExpenseTypes = _context.ExpenseTypes.OrderBy(t => t.Name).ToList();
+            ViewData["ExpenseTypeId"] = new SelectList(_context.ExpenseTypes, "ExpenseTypeId", "ExpenseTypeId", expense.ExpenseTypeId);
             return View(expense);
         }
 
@@ -132,8 +135,8 @@ namespace Trackity.Controllers
             {
                 return NotFound();
             }
-            
-            var expense = await context.Expenses
+
+            var expense = await _context.Expenses
                 .Include(e => e.ExpenseType)
                 .FirstOrDefaultAsync(m => m.ExpenseId == id);
             if (expense == null)
@@ -149,17 +152,15 @@ namespace Trackity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var expense = await context.Expenses.FindAsync(id);
-            context.Expenses.Remove(expense);
-            await context.SaveChangesAsync();
+            var expense = await _context.Expenses.FindAsync(id);
+            _context.Expenses.Remove(expense);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ExpenseExists(int id)
         {
-            return context.Expenses.Any(e => e.ExpenseId == id);
+            return _context.Expenses.Any(e => e.ExpenseId == id);
         }
     }
 }
-//return View(_context.Albums .Include(a => a.Artist) .OrderBy(a => a.Artist.Name) .Include(a => a.Genre) .ToList());
-//return View(await _context.Expenses .Include(e=>e.Type) .ToListAsync());

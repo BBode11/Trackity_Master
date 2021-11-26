@@ -23,8 +23,10 @@ namespace Trackity.Controllers
 
         public IActionResult Index()
         {
-            var expenses = context.Expenses.Include(e => e.ExpenseType)
-                .OrderBy(e => e.Name).ToList();
+            var expenses = context.Expenses
+                .Include(e => e.ExpenseType)
+                .OrderBy(e => e.Name)
+                .ToList();
             return View(expenses);
         }
 

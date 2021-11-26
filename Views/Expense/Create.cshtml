@@ -1,14 +1,14 @@
 ﻿@model Trackity.Models.Expense
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create New Expense";
 }
 
-<h1>Create</h1>
+<h1 class="text-center jumbotron">Create New Expense</h1>
 
-<h4>Expense</h4>
+<h4>Add Expense Information</h4>
 <hr />
-<div class="row">
+<div class="row jumbotron">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -28,24 +28,24 @@
                 <span asp-validation-for="Cost" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ExpenseId" class="control-label">Type</label>
-                <select asp-for="ExpenseId" class="control-label">
-                    <option value="">Select a type</option>
-                    @foreach (ExpenseType e in ViewBag.ExpenseTypes)
+                <label asp-for="ExpenseTypeId">Expense Type</label>
+                <select asp-for="ExpenseTypeId" class="form-control">
+                    <option value="">Select Expense Type</option>
+                    @foreach (ExpenseType t in ViewBag.ExpenseTypes)
                     {
-            <option value="@e.ExpenseTypeId">@e.Name</option>}
+                        <option value="@t.ExpenseTypeId">@t.Name</option>
+                    }
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-crud" />
+                <input type="submit" value="Create" class="btn btn-lg btn-outline-light pr-3" />
+            
+                <a asp-action="Index" class="btn btn-lg btn-outline-light">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

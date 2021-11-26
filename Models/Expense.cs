@@ -17,13 +17,13 @@ namespace Trackity.Models
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
-        [RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Only alphabetic letters are allowed.")]
+        //[RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Only alphabetic letters are allowed.")]
         [Required(ErrorMessage = "Please enter name of expense.")]
         [Display(Name = "Expense Name")]
         [StringLength(200, MinimumLength = 2)]
         public string Name { get; set; }
 
-        [RegularExpression("^[0 - 9] *$", ErrorMessage = "Must only include numbers.")]
+        //[RegularExpression("^[0 - 9] *$", ErrorMessage = "Must only include numbers.")]
         [Required(ErrorMessage = "Please enter cost of expense.")]
         [Range(1, 10000, ErrorMessage = "Expense must be between 1 and 10000.")]
         public double? Cost { get; set; }
