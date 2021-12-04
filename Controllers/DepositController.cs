@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Trackity.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Trackity.Controllers
 {
+    [Authorize]
     public class DepositController : Controller
     {
         private readonly ExpenseContext _context;
