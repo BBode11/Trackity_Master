@@ -19,12 +19,65 @@ namespace Trackity.Controllers
         }
 
         // GET: Expense
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var expenseContext = _context.Expenses.Include(e => e.ExpenseType);
+        //    return View(await expenseContext.ToListAsync());
+        //}
+
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
-            var expenseContext = _context.Expenses.Include(e => e.ExpenseType);
-            return View(await expenseContext.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CostSortParm"] = sortOrder == "Cost" ? "cost_desc" : "Cost";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+
+            var expenses = from e in _context.Expenses.Include(e => e.ExpenseType)
+                           select e;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                expenses = expenses.Where(s => s.Name.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    expenses = expenses.OrderByDescending(s => s.Name);
+                    break;
+                case "Date":
+                    expenses = expenses.OrderBy(s => s.Date);
+                    break;
+                case "date_desc":
+                    expenses = expenses.OrderByDescending(s => s.Date);
+                    break;
+                case "Cost":
+                    expenses = expenses.OrderBy(s => s.Cost);
+                    break;
+                case "cost_desc":
+                    expenses = expenses.OrderByDescending(s => s.Cost);
+                    break;
+                default:
+                    expenses = expenses.OrderBy(s => s.Name);
+                    break;
+            }
+            int pageSize = 3;
+            return View(await PaginatedList<Expense>.CreateAsync(expenses.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
+        
         // GET: Expense/Details/5
         public async Task<IActionResult> Details(int? id)
         {
