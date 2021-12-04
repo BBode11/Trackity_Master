@@ -11,6 +11,7 @@ namespace Trackity.Models
         public ExpenseContext (DbContextOptions<ExpenseContext> options) : base(options) { }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseType> ExpenseTypes { get; set; }
+        public DbSet<Deposit> Deposits { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +54,36 @@ namespace Trackity.Models
                     Name = "Bubba's",
                     Cost = 21.85,
                     ExpenseTypeId = "R"
+                }
+                );
+            modelBuilder.Entity<Deposit>().HasData(
+                new Deposit
+                {
+                    DepositId = 1,
+                    Date = DateTime.Parse("10-24-2021"),
+                    Name = "Pay Check",
+                    Amount = 1500
+                },
+                new Deposit
+                {
+                    DepositId = 2,
+                    Date = DateTime.Parse("11-04-2021"),
+                    Name = "Pay Check",
+                    Amount = 1500
+                },
+                new Deposit
+                {
+                    DepositId = 3,
+                    Date = DateTime.Parse("11-05-2021"),
+                    Name = "Scratch Off Ticket",
+                    Amount = 500
+                },
+                new Deposit
+                {
+                    DepositId = 4,
+                    Date = DateTime.Parse("11-11-2021"),
+                    Name = "Stock Returns",
+                    Amount = 47.50
                 }
                 );
         }
